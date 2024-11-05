@@ -2,6 +2,9 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 
+# 폰트 설정 추가
+plt.rcParams['font.family'] = 'DejaVu Sans'
+
 # 세션 상태 초기화
 if 'N_true' not in st.session_state:
     # 실제 전차 수 (50에서 150 사이의 랜덤 값)
