@@ -65,12 +65,12 @@ if st.button("추측 제출"):
         st.write(f"실제 전차 수: {N_true}")
 
         # 추정치 비교 그래프
-        st.subheader("추정치 비교 그래프")
+        st.subheader("Estimate comparison graph")
         estimates = {
-            '당신의 추측': user_guess,
-            '최대 우도 추정치': N_MLE,
-            '불편 추정량': N_unbiased,
-            '실제 전차 수': N_true
+            'your guess': user_guess,
+            'maximum likelihood estimate': N_MLE,
+            'unbiased estimator': N_unbiased,
+            'Actual number of tanks': N_true
         }
 
         estimate_names = list(estimates.keys())
