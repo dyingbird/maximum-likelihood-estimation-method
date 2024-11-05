@@ -52,6 +52,21 @@ if submit_clicked and st.session_state['user_guess'] is None:
         # 실제 전차 수
         N_true = st.session_state['N_true']
 
+        # 계산 과정 보여주기
+        st.subheader("계산 과정")
+        st.write(f"표본 크기 (n): {n}")
+        st.write(f"관측된 최대 일련번호 (X_max): {X_max}")
+
+        st.write("**최대 우도 추정치 (MLE) 계산**")
+        st.latex(r'''
+            \hat{N}_{\text{MLE}} = X_{\text{max}} = %d
+            ''' % N_MLE)
+
+        st.write("**불편 추정량 계산**")
+        st.latex(r'''
+            \hat{N}_{\text{unbiased}} = X_{\text{max}} + \left( \dfrac{X_{\text{max}}}{n} \right) - 1 = %d + \left( \dfrac{%d}{%d} \right) - 1 = %.2f
+            ''' % (X_max, X_max, n, N_unbiased))
+        
         # 결과 출력
         st.subheader("결과")
         st.write(f"당신의 추측: {user_guess}")
