@@ -24,9 +24,10 @@ st.write("""
 아래에 제시된 전차의 일련번호 표본을 보고 전체 전차 수를 추측해보세요.
 """)
 
-# 관측된 전차 일련번호 표시
+# 관측된 전차 일련번호 표시 (쉼표로 구분하여 표시)
 st.subheader("관측된 전차의 일련번호")
-st.write(f"{st.session_state['observed_numbers']}")
+observed_numbers_str = ', '.join(map(str, st.session_state['observed_numbers']))
+st.write(f"{observed_numbers_str}")
 
 # 사용자로부터 전체 전차 수 추측 입력 받기
 st.subheader("전체 전차 수를 추측해보세요:")
