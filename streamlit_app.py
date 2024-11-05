@@ -81,10 +81,10 @@ if submit_clicked and st.session_state['user_guess'] is None:
         # 추정치 비교 그래프
         st.subheader("추정치 비교 그래프")
         estimates = {
-            '당신의 추측': user_guess,
-            '최대 우도 추정치': N_MLE,
-            '불편 추정량': N_unbiased,
-            '실제 전차 수': N_true
+            'your guess': user_guess,
+            'maximum likelihood\nestimate': N_MLE,
+            'unbiased\nestimator': N_unbiased,
+            'Actual number\nof tanks': N_true
         }
 
         estimate_names = list(estimates.keys())
@@ -92,8 +92,8 @@ if submit_clicked and st.session_state['user_guess'] is None:
 
         fig, ax = plt.subplots(figsize=(8, 6))
         bars = ax.bar(estimate_names, estimate_values, color=['blue', 'orange', 'green', 'red'])
-        ax.set_ylabel('전차 수')
-        ax.set_title('전차 수 추정치 비교')
+        ax.set_ylabel('number of tanks')
+        ax.set_title('Comparison of tank count estimates')
         ax.bar_label(bars)
         plt.tight_layout()
 
