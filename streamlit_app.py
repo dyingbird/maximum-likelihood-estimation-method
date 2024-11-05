@@ -2,27 +2,29 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 
-# 폰트 설정 추가
+# 폰트 설정 (한글 사용 안 함)
 plt.rcParams['font.family'] = 'DejaVu Sans'
 
 # 세션 상태 초기화
+if 'restart' not in st.session_state:
+    st.session_state['restart'] = False
+
+if st.session_state['restart']:
+    st.session_state.clear()
+    st.session_state['restart'] = False
+
 if 'N_true' not in st.session_state:
-    # 실제 전차 수 (50에서 150 사이의 랜덤 값)
     st.session_state['N_true'] = np.random.randint(50, 151)
-    
+        
 if 'n' not in st.session_state:
-    # 표본 크기 (4에서 6 사이의 랜덤 값)
     st.session_state['n'] = np.random.randint(4, 7)
-    
+        
 if 'observed_numbers' not in st.session_state:
-    # 실제 전차 일련번호 리스트
     tank_numbers = np.arange(1, st.session_state['N_true'] + 1)
-    # 표본 추출 (중복 없이 랜덤 추출)
     st.session_state['observed_numbers'] = np.random.choice(
         tank_numbers, size=st.session_state['n'], replace=False)
     st.session_state['observed_numbers'].sort()
 
-# 사용자 입력 저장을 위한 상태 변수 초기화
 if 'user_guess' not in st.session_state:
     st.session_state['user_guess'] = None
 
@@ -68,30 +70,32 @@ if st.button("추측 제출"):
         st.subheader("추정치 비교 그래프")
         estimates = {
             'your guess': user_guess,
-            'maximum likelihood\nestimate': N_MLE,
-            'unbiased\nestimator': N_unbiased,
+            'Maximum likelihood\nestimate': N_MLE,
+            'Unbiased\nestimate': N_unbiased,
             'Actual number\nof tanks': N_true
         }
 
         estimate_names = list(estimates.keys())
         estimate_values = list(estimates.values())
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
         bars = ax.bar(estimate_names, estimate_values, color=['blue', 'orange', 'green', 'red'])
         ax.set_ylabel('number of tanks')
         ax.set_title('Comparison of tank count estimates')
         ax.bar_label(bars)
+        plt.tight_layout()
+
         st.pyplot(fig)
 
     except ValueError:
         st.error("올바른 숫자를 입력했는지 확인하세요.")
 else:
     if st.session_state['user_guess'] is not None:
-        st.write("이미 추측을 제출하셨습니다. 앱을 다시 실행하려면 '다시 시작' 버튼을 눌러주세요.")
+        st.write("이미 추측을 제출하셨습니다. 새로운 문제를 풀려면 '다시 시작' 버튼을 눌러주세요.")
     else:
         st.info("전체 전차 수에 대한 당신의 추측을 입력하고 '추측 제출' 버튼을 눌러주세요.")
 
 # 다시 시작 버튼 추가
 if st.button("다시 시작"):
-    st.session_state.clear()
+    st.session_state['restart'] = True
     st.experimental_rerun()
