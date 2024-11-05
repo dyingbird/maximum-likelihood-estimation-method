@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 plt.rcParams['font.family'] = 'DejaVu Sans'
 
 # 세션 상태 초기화
-if 'N_true' not in st.session_state or 'restart' in st.session_state:
+if 'N_true' not in st.session_state:
     st.session_state['N_true'] = np.random.randint(50, 151)
     st.session_state['n'] = np.random.randint(4, 7)
     tank_numbers = np.arange(1, st.session_state['N_true'] + 1)
@@ -14,8 +14,6 @@ if 'N_true' not in st.session_state or 'restart' in st.session_state:
         tank_numbers, size=st.session_state['n'], replace=False)
     st.session_state['observed_numbers'].sort()
     st.session_state['user_guess'] = None
-    if 'restart' in st.session_state:
-        del st.session_state['restart']
 
 st.title("전차 문제 시뮬레이션")
 
@@ -31,10 +29,15 @@ st.write(f"{observed_numbers_str}")
 
 # 사용자로부터 전체 전차 수 추측 입력 받기
 st.subheader("전체 전차 수를 추측해보세요:")
-user_guess_input = st.text_input("당신이 추측한 전체 전차 수를 입력하세요", value="")
+user_guess_input = st.text_input("당신이 추측한 전체 전차 수를 입력하세요", value="", key='user_guess_input')
 
 submit_clicked = st.button("추측 제출")
 restart_clicked = st.button("다시 시작")
+
+if restart_clicked:
+    # 세션 상태 초기화
+    st.session_state.clear()
+    st.experimental_rerun()
 
 if submit_clicked and st.session_state['user_guess'] is None:
     try:
@@ -66,9 +69,39 @@ if submit_clicked and st.session_state['user_guess'] is None:
         st.latex(r'''
             \hat{N}_{\text{unbiased}} = X_{\text{max}} + \left( \dfrac{X_{\text{max}}}{n} \right) - 1 = %d + \left( \dfrac{%d}{%d} \right) - 1 = %.2f
             ''' % (X_max, X_max, n, N_unbiased))
-        
+
+        # 실제 전차 수와의 차이 계산
+        st.subheader("추정치와 실제 전차 수의 차이 비교")
+
+        # 각 추정치와 실제 값의 차이 계산
+        diff_user = abs(N_true - user_guess)
+        diff_MLE = abs(N_true - N_MLE)
+        diff_unbiased = abs(N_true - N_unbiased)
+
+        # 차이 값을 딕셔너리에 저장
+        differences = {
+            '당신의 추측': diff_user,
+            '최대 우도 추정치 (MLE)': diff_MLE,
+            '불편 추정량': diff_unbiased
+        }
+
+        # 가장 작은 차이를 찾기
+        min_diff_value = min(differences.values())
+        closest_estimate = [name for name, diff in differences.items() if diff == min_diff_value]
+
+        # 계산 과정과 결과 표시
+        st.write(f"실제 전차 수: {N_true}")
+        st.write(f"당신의 추측과의 차이: |{N_true} - {user_guess}| = {diff_user}")
+        st.write(f"최대 우도 추정치와의 차이: |{N_true} - {N_MLE}| = {diff_MLE}")
+        st.write(f"불편 추정량과의 차이: |{N_true} - {N_unbiased:.2f}| = {diff_unbiased:.2f}")
+
+        st.write("")
+
+        # 가장 작은 차이를 보이는 추정치 표시
+        st.write(f"가장 작은 차이를 보이는 값은 **{' , '.join(closest_estimate)}** 입니다.")
+
         # 결과 출력
-        st.subheader("결과")
+        st.subheader("결과 요약")
         st.write(f"당신의 추측: {user_guess}")
         st.write(f"최대 우도 추정치 (MLE): {N_MLE}")
         st.write(f"불편 추정량: {N_unbiased:.2f}")
@@ -77,10 +110,10 @@ if submit_clicked and st.session_state['user_guess'] is None:
         # 추정치 비교 그래프
         st.subheader("추정치 비교 그래프")
         estimates = {
-            'your guess': user_guess,
-            'Maximum likelihood\nestimate': N_MLE,
-            'Unbiased bias\nestimate': N_unbiased,
-            'Actual number\nof tanks': N_true
+            '당신의 추측': user_guess,
+            '최대 우도 추정치': N_MLE,
+            '불편 추정량': N_unbiased,
+            '실제 전차 수': N_true
         }
 
         estimate_names = list(estimates.keys())
@@ -88,8 +121,8 @@ if submit_clicked and st.session_state['user_guess'] is None:
 
         fig, ax = plt.subplots(figsize=(8, 6))
         bars = ax.bar(estimate_names, estimate_values, color=['blue', 'orange', 'green', 'red'])
-        ax.set_ylabel('number of tanks')
-        ax.set_title('Comparison of tank count estimates')
+        ax.set_ylabel('전차 수')
+        ax.set_title('전차 수 추정치 비교')
         ax.bar_label(bars)
         plt.tight_layout()
 
@@ -97,10 +130,6 @@ if submit_clicked and st.session_state['user_guess'] is None:
 
     except ValueError:
         st.error("올바른 숫자를 입력했는지 확인하세요.")
-
-elif restart_clicked:
-    st.session_state['restart'] = True
-    st.experimental_rerun()
 
 elif st.session_state['user_guess'] is not None:
     st.write("이미 추측을 제출하셨습니다. 새로운 문제를 풀려면 '다시 시작' 버튼을 눌러주세요.")
