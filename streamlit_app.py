@@ -2,18 +2,22 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 
-# 실제 전차 수 (50에서 150 사이의 랜덤 값)
-N_true = np.random.randint(50, 151)
-
-# 표본 크기 (4에서 6 사이의 랜덤 값)
-n = np.random.randint(4, 7)
-
-# 실제 전차 일련번호 리스트
-tank_numbers = np.arange(1, N_true + 1)
-
-# 표본 추출 (중복 없이 랜덤 추출)
-observed_numbers = np.random.choice(tank_numbers, size=n, replace=False)
-observed_numbers.sort()
+# 세션 상태 초기화
+if 'N_true' not in st.session_state:
+    # 실제 전차 수 (50에서 150 사이의 랜덤 값)
+    st.session_state['N_true'] = np.random.randint(50, 151)
+    
+if 'n' not in st.session_state:
+    # 표본 크기 (4에서 6 사이의 랜덤 값)
+    st.session_state['n'] = np.random.randint(4, 7)
+    
+if 'observed_numbers' not in st.session_state:
+    # 실제 전차 일련번호 리스트
+    tank_numbers = np.arange(1, st.session_state['N_true'] + 1)
+    # 표본 추출 (중복 없이 랜덤 추출)
+    st.session_state['observed_numbers'] = np.random.choice(
+        tank_numbers, size=st.session_state['n'], replace=False)
+    st.session_state['observed_numbers'].sort()
 
 # 사용자 입력 저장을 위한 상태 변수 초기화
 if 'user_guess' not in st.session_state:
@@ -28,7 +32,7 @@ st.write("""
 
 # 관측된 전차 일련번호 표시
 st.subheader("관측된 전차의 일련번호")
-st.write(f"{observed_numbers}")
+st.write(f"{st.session_state['observed_numbers']}")
 
 # 사용자로부터 전체 전차 수 추측 입력 받기
 st.subheader("전체 전차 수를 추측해보세요:")
@@ -40,11 +44,15 @@ if st.button("추측 제출"):
         st.session_state['user_guess'] = user_guess
 
         # 최대 우도 추정치 계산
-        X_max = max(observed_numbers)
+        X_max = max(st.session_state['observed_numbers'])
+        n = st.session_state['n']
         N_MLE = X_max
 
         # 불편 추정량 계산
         N_unbiased = X_max + (X_max / n) - 1
+
+        # 실제 전차 수
+        N_true = st.session_state['N_true']
 
         # 결과 출력
         st.subheader("결과")
@@ -76,6 +84,11 @@ if st.button("추측 제출"):
         st.error("올바른 숫자를 입력했는지 확인하세요.")
 else:
     if st.session_state['user_guess'] is not None:
-        st.write("이미 추측을 제출하셨습니다. 앱을 다시 실행하려면 새로고침하세요.")
+        st.write("이미 추측을 제출하셨습니다. 앱을 다시 실행하려면 '다시 시작' 버튼을 눌러주세요.")
     else:
         st.info("전체 전차 수에 대한 당신의 추측을 입력하고 '추측 제출' 버튼을 눌러주세요.")
+
+# 다시 시작 버튼 추가
+if st.button("다시 시작"):
+    st.session_state.clear()
+    st.experimental_rerun()
