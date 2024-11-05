@@ -68,9 +68,9 @@ if st.button("추측 제출"):
         st.subheader("추정치 비교 그래프")
         estimates = {
             'your guess': user_guess,
-            'maximum likelihood estimate': N_MLE,
-            'unbiased estimator': N_unbiased,
-            'Actual number of tanks': N_true
+            'maximum likelihood\nestimate': N_MLE,
+            'unbiased\nestimator': N_unbiased,
+            'Actual number\nof tanks': N_true
         }
 
         estimate_names = list(estimates.keys())
