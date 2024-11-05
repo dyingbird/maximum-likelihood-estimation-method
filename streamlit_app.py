@@ -78,8 +78,8 @@ if st.button("추측 제출"):
 
         fig, ax = plt.subplots()
         bars = ax.bar(estimate_names, estimate_values, color=['blue', 'orange', 'green', 'red'])
-        ax.set_ylabel('전차 수')
-        ax.set_title('전차 수 추정치 비교')
+        ax.set_ylabel('number of tanks')
+        ax.set_title('Comparison of tank count estimates')
         ax.bar_label(bars)
         st.pyplot(fig)
 
