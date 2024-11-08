@@ -135,6 +135,17 @@ if submit_clicked and st.session_state['user_guess'] is None:
 
         # 가장 작은 차이를 보이는 추정치 표시
         st.write(f"가장 작은 차이를 보이는 값은 **{' , '.join(closest_estimate)}** 입니다.")
+
+        n = int(n)
+        X_max = int(X_max)
+        N_MLE = int(N_MLE)
+        N_unbiased = float(N_unbiased)
+        N_true = int(N_true)
+        diff_user = int(diff_user)
+        diff_MLE = int(diff_MLE)
+        diff_unbiased = float(diff_unbiased)
+
+
         
         # 결과를 Supabase에 저장
         data = {
