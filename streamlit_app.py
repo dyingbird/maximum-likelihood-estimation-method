@@ -139,15 +139,15 @@ if submit_clicked and st.session_state['user_guess'] is None:
         # 결과를 Supabase에 저장
         data = {
             "observed_numbers": observed_numbers_str,
-            "sample_size": n,
-            "max_observed": X_max,
-            "user_guess": user_guess,
-            "mle_estimate": N_MLE,
-            "unbiased_estimate": N_unbiased,
-            "true_value": N_true,
-            "diff_user": diff_user,
-            "diff_mle": diff_MLE,
-            "diff_unbiased": diff_unbiased
+            "sample_size": int(n),
+            "max_observed": int(X_max),
+            "user_guess": int(user_guess),
+            "mle_estimate": int(N_MLE),
+            "unbiased_estimate": float(N_unbiased),
+            "true_value": int(N_true),
+            "diff_user": int(diff_user),
+            "diff_mle": int(diff_MLE),
+            "diff_unbiased": float(diff_unbiased)
         }
 
         # 데이터 삽입
@@ -157,6 +157,7 @@ if submit_clicked and st.session_state['user_guess'] is None:
             st.error("데이터를 저장하는 중 오류가 발생했습니다.")
         else:
             st.success("결과가 성공적으로 저장되었습니다.")
+
 
     except ValueError:
         st.error("올바른 숫자를 입력했는지 확인하세요.")
