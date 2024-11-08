@@ -1,9 +1,17 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
+from supabase import create_client, Client
 
 # 폰트 설정 (한글 사용 안 함)
 plt.rcParams['font.family'] = 'DejaVu Sans'
+
+# Supabase 인증 정보 가져오기
+supabase_url = st.secrets["supabase"]["url"]
+supabase_key = st.secrets["supabase"]["key"]
+
+# Supabase 클라이언트 생성
+supabase: Client = create_client(supabase_url, supabase_key)
 
 # 세션 상태 초기화
 if 'N_true' not in st.session_state:
@@ -70,36 +78,7 @@ if submit_clicked and st.session_state['user_guess'] is None:
             \hat{N}_{\text{unbiased}} = X_{\text{max}} + \left( \dfrac{X_{\text{max}}}{n} \right) - 1 = %d + \left( \dfrac{%d}{%d} \right) - 1 = %.2f
             ''' % (X_max, X_max, n, N_unbiased))
 
-    
-        # 결과 출력
-        st.subheader("결과 요약")
-        st.write(f"당신의 추측: {user_guess}")
-        st.write(f"최대 우도 추정치 (MLE): {N_MLE}")
-        st.write(f"불편 추정량: {N_unbiased:.2f}")
-        st.write(f"실제 전차 수: {N_true}")
-
-        # 추정치 비교 그래프
-        st.subheader("추정치 비교 그래프")
-        estimates = {
-            'your guess': user_guess,
-            'maximum likelihood\nestimate': N_MLE,
-            'unbiased\nestimator': N_unbiased,
-            'Actual number\nof tanks': N_true
-        }
-
-        estimate_names = list(estimates.keys())
-        estimate_values = list(estimates.values())
-
-        fig, ax = plt.subplots(figsize=(8, 6))
-        bars = ax.bar(estimate_names, estimate_values, color=['blue', 'orange', 'green', 'red'])
-        ax.set_ylabel('number of tanks')
-        ax.set_title('Comparison of tank count estimates')
-        ax.bar_label(bars)
-        plt.tight_layout()
-
-        st.pyplot(fig)
-
-            # 실제 전차 수와의 차이 계산
+        # 실제 전차 수와의 차이 계산
         st.subheader("추정치와 실제 전차 수의 차이 비교")
 
         # 각 추정치와 실제 값의 차이 계산
@@ -129,8 +108,56 @@ if submit_clicked and st.session_state['user_guess'] is None:
         # 가장 작은 차이를 보이는 추정치 표시
         st.write(f"가장 작은 차이를 보이는 값은 **{' , '.join(closest_estimate)}** 입니다.")
 
+        # 결과 요약
+        st.subheader("결과 요약")
+        st.write(f"당신의 추측: {user_guess}")
+        st.write(f"최대 우도 추정치 (MLE): {N_MLE}")
+        st.write(f"불편 추정량: {N_unbiased:.2f}")
+        st.write(f"실제 전차 수: {N_true}")
 
-    
+        # 추정치 비교 그래프
+        st.subheader("추정치 비교 그래프")
+        estimates = {
+            '당신의 추측': user_guess,
+            '최대 우도 추정치': N_MLE,
+            '불편 추정량': N_unbiased,
+            '실제 전차 수': N_true
+        }
+
+        estimate_names = list(estimates.keys())
+        estimate_values = list(estimates.values())
+
+        fig, ax = plt.subplots(figsize=(8, 6))
+        bars = ax.bar(estimate_names, estimate_values, color=['blue', 'orange', 'green', 'red'])
+        ax.set_ylabel('전차 수')
+        ax.set_title('전차 수 추정치 비교')
+        ax.bar_label(bars)
+        plt.tight_layout()
+
+        st.pyplot(fig)
+
+        # 결과를 Supabase에 저장
+        data = {
+            "observed_numbers": observed_numbers_str,
+            "sample_size": n,
+            "max_observed": X_max,
+            "user_guess": user_guess,
+            "mle_estimate": N_MLE,
+            "unbiased_estimate": N_unbiased,
+            "true_value": N_true,
+            "diff_user": diff_user,
+            "diff_mle": diff_MLE,
+            "diff_unbiased": diff_unbiased
+        }
+
+        # 데이터 삽입
+        response = supabase.table('results').insert(data).execute()
+
+        if response.error:
+            st.error("데이터를 저장하는 중 오류가 발생했습니다.")
+        else:
+            st.success("결과가 성공적으로 저장되었습니다.")
+
     except ValueError:
         st.error("올바른 숫자를 입력했는지 확인하세요.")
 
