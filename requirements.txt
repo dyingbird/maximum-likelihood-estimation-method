@@ -1,4 +1,4 @@
 streamlit
 numpy
 matplotlib
-supabase-py==0.0.7
+supabase-py
