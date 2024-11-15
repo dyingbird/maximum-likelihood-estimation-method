@@ -88,7 +88,16 @@ if submit_clicked and st.session_state['user_guess'] is None:
         min_diff_value = min(differences.values())
         closest_estimate = [name for name, diff in differences.items() if diff == min_diff_value]
 
-        # 계산 과정과 결과 표시
+        # 추정치 비교 그래프
+        st.subheader("추정치 비교 그래프")
+        estimates = {
+            'your guess': user_guess,
+            'maximum likelihood\nestimate': N_MLE,
+            'unbiased\nestimator': N_unbiased,
+            'Actual number\nof tanks': N_true
+        }
+
+         # 계산 과정과 결과 표시
         st.write(f"실제 전차 수: {N_true}")
         st.write(f"당신의 추측과의 차이: |{N_true} - {user_guess}| = {diff_user}")
         st.write(f"최대 우도 추정치와의 차이: |{N_true} - {N_MLE}| = {diff_MLE}")
@@ -106,15 +115,7 @@ if submit_clicked and st.session_state['user_guess'] is None:
         st.write(f"불편 추정량: {N_unbiased:.2f}")
         st.write(f"실제 전차 수: {N_true}")
 
-        # 추정치 비교 그래프
-        st.subheader("추정치 비교 그래프")
-        estimates = {
-            '당신의 추측': user_guess,
-            '최대 우도 추정치': N_MLE,
-            '불편 추정량': N_unbiased,
-            '실제 전차 수': N_true
-        }
-
+        
         estimate_names = list(estimates.keys())
         estimate_values = list(estimates.values())
 
