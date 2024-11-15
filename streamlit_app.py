@@ -69,9 +69,6 @@ if submit_clicked and st.session_state['user_guess'] is None:
             \hat{N}_{\text{unbiased}} = X_{\text{max}} + \left( \dfrac{X_{\text{max}}}{n} \right) - 1 = %d + \left( \dfrac{%d}{%d} \right) - 1 = %.2f
             ''' % (X_max, X_max, n, N_unbiased))
 
-        # 실제 전차 수와의 차이 계산
-        st.subheader("추정치와 실제 전차 수의 차이 비교")
-
         # 각 추정치와 실제 값의 차이 계산
         diff_user = abs(N_true - user_guess)
         diff_MLE = abs(N_true - N_MLE)
@@ -115,9 +112,11 @@ if submit_clicked and st.session_state['user_guess'] is None:
         st.write(f"최대 우도 추정치 (MLE): {N_MLE}")
         st.write(f"불편 추정량: {N_unbiased:.2f}")
         st.write(f"실제 전차 수: {N_true}")
+
+        # 실제 전차 수와의 차이 계산
+        st.subheader("추정치와 실제 전차 수의 차이 비교")
         
         # 계산 과정과 결과 표시
-        st.write(f"실제 전차 수: {N_true}")
         st.write(f"당신의 추측과의 차이: |{N_true} - {user_guess}| = {diff_user}")
         st.write(f"최대 우도 추정치와의 차이: |{N_true} - {N_MLE}| = {diff_MLE}")
         st.write(f"불편 추정량과의 차이: |{N_true} - {N_unbiased:.2f}| = {diff_unbiased:.2f}")
