@@ -8,7 +8,7 @@ import json
 plt.rcParams['font.family'] = 'DejaVu Sans'
 
 # Apps Script 웹 앱 URL
-WEB_APP_URL = "YOUR_WEB_APP_URL"  # 여기에 웹 앱 URL을 입력하세요.
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzIH_0xKWi8hHT7-x4pac0FQUqFdbnknwei_YMSy0E8SvitO6sM_YCydoPGdunH3hLlyw/exec"  # 여기에 웹 앱 URL을 입력하세요.
 
 # 세션 상태 초기화
 if 'N_true' not in st.session_state:
