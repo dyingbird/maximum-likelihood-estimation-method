@@ -1,17 +1,14 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-from supabase import create_client, Client
+import requests
+import json
 
 # 폰트 설정 (한글 사용 안 함)
 plt.rcParams['font.family'] = 'DejaVu Sans'
 
-# Supabase 인증 정보 가져오기
-supabase_url = st.secrets["supabase"]["url"]
-supabase_key = st.secrets["supabase"]["key"]
-
-# Supabase 클라이언트 생성
-supabase: Client = create_client(supabase_url, supabase_key)
+# Apps Script 웹 앱 URL
+WEB_APP_URL = "YOUR_WEB_APP_URL"  # 여기에 웹 앱 URL을 입력하세요.
 
 # 세션 상태 초기화
 if 'N_true' not in st.session_state:
@@ -93,34 +90,6 @@ if submit_clicked and st.session_state['user_guess'] is None:
             '불편 추정량': diff_unbiased
         }
 
-        # 결과 요약
-        st.subheader("결과 요약")
-        st.write(f"당신의 추측: {user_guess}")
-        st.write(f"최대 우도 추정치 (MLE): {N_MLE}")
-        st.write(f"불편 추정량: {N_unbiased:.2f}")
-        st.write(f"실제 전차 수: {N_true}")
-
-        # 추정치 비교 그래프
-        st.subheader("추정치 비교 그래프")
-        estimates = {
-            'your guess': user_guess,
-            'maximum likelihood estimate': N_MLE,
-            'unbiased estimator': N_unbiased,
-            'Actual number of tanks': N_true
-        }
-
-        estimate_names = list(estimates.keys())
-        estimate_values = list(estimates.values())
-
-        fig, ax = plt.subplots(figsize=(8, 6))
-        bars = ax.bar(estimate_names, estimate_values, color=['blue', 'orange', 'green', 'red'])
-        ax.set_ylabel('number of tanks')
-        ax.set_title('Comparison of tank count estimates')
-        ax.bar_label(bars)
-        plt.tight_layout()
-
-        st.pyplot(fig)
-
         # 가장 작은 차이를 찾기
         min_diff_value = min(differences.values())
         closest_estimate = [name for name, diff in differences.items() if diff == min_diff_value]
@@ -135,9 +104,36 @@ if submit_clicked and st.session_state['user_guess'] is None:
 
         # 가장 작은 차이를 보이는 추정치 표시
         st.write(f"가장 작은 차이를 보이는 값은 **{' , '.join(closest_estimate)}** 입니다.")
-        
-        
-        # 결과를 Supabase에 저장
+
+        # 결과 요약
+        st.subheader("결과 요약")
+        st.write(f"당신의 추측: {user_guess}")
+        st.write(f"최대 우도 추정치 (MLE): {N_MLE}")
+        st.write(f"불편 추정량: {N_unbiased:.2f}")
+        st.write(f"실제 전차 수: {N_true}")
+
+        # 추정치 비교 그래프
+        st.subheader("추정치 비교 그래프")
+        estimates = {
+            '당신의 추측': user_guess,
+            '최대 우도 추정치': N_MLE,
+            '불편 추정량': N_unbiased,
+            '실제 전차 수': N_true
+        }
+
+        estimate_names = list(estimates.keys())
+        estimate_values = list(estimates.values())
+
+        fig, ax = plt.subplots(figsize=(8, 6))
+        bars = ax.bar(estimate_names, estimate_values, color=['blue', 'orange', 'green', 'red'])
+        ax.set_ylabel('전차 수')
+        ax.set_title('전차 수 추정치 비교')
+        ax.bar_label(bars)
+        plt.tight_layout()
+
+        st.pyplot(fig)
+
+        # 데이터를 Apps Script 웹 앱에 전송
         data = {
             "observed_numbers": observed_numbers_str,
             "sample_size": int(n),
@@ -151,14 +147,13 @@ if submit_clicked and st.session_state['user_guess'] is None:
             "diff_unbiased": float(diff_unbiased)
         }
 
-        # 데이터 삽입
-        response = supabase.table('results').insert(data).execute()
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(WEB_APP_URL, data=json.dumps(data), headers=headers)
 
-        if response.error:
-            st.error("데이터를 저장하는 중 오류가 발생했습니다.")
-        else:
+        if response.status_code == 200:
             st.success("결과가 성공적으로 저장되었습니다.")
-
+        else:
+            st.error(f"데이터를 저장하는 중 오류가 발생했습니다. 상태 코드: {response.status_code}")
 
     except ValueError:
         st.error("올바른 숫자를 입력했는지 확인하세요.")
