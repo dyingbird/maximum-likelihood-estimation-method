@@ -89,7 +89,7 @@ if submit_clicked and st.session_state['user_guess'] is None:
         closest_estimate = [name for name, diff in differences.items() if diff == min_diff_value]
 
         # 추정치 비교 그래프
-        st.subheader("Estimate comparison graph")
+        st.subheader("추정치 비교 그래프")
         estimates = {
             'your guess': user_guess,
             'maximum likelihood\nestimate': N_MLE,
@@ -97,7 +97,26 @@ if submit_clicked and st.session_state['user_guess'] is None:
             'Actual number\nof tanks': N_true
         }
 
-         # 계산 과정과 결과 표시
+        estimate_names = list(estimates.keys())
+        estimate_values = list(estimates.values())
+
+        fig, ax = plt.subplots(figsize=(8, 6))
+        bars = ax.bar(estimate_names, estimate_values, color=['blue', 'orange', 'green', 'red'])
+        ax.set_ylabel('number of tanks')
+        ax.set_title('Comparison of tank count estimates')
+        ax.bar_label(bars)
+        plt.tight_layout()
+
+        st.pyplot(fig)
+
+        # 결과 요약
+        st.subheader("결과 요약")
+        st.write(f"당신의 추측: {user_guess}")
+        st.write(f"최대 우도 추정치 (MLE): {N_MLE}")
+        st.write(f"불편 추정량: {N_unbiased:.2f}")
+        st.write(f"실제 전차 수: {N_true}")
+        
+        # 계산 과정과 결과 표시
         st.write(f"실제 전차 수: {N_true}")
         st.write(f"당신의 추측과의 차이: |{N_true} - {user_guess}| = {diff_user}")
         st.write(f"최대 우도 추정치와의 차이: |{N_true} - {N_MLE}| = {diff_MLE}")
@@ -107,26 +126,6 @@ if submit_clicked and st.session_state['user_guess'] is None:
 
         # 가장 작은 차이를 보이는 추정치 표시
         st.write(f"가장 작은 차이를 보이는 값은 **{' , '.join(closest_estimate)}** 입니다.")
-
-        # 결과 요약
-        st.subheader("결과 요약")
-        st.write(f"당신의 추측: {user_guess}")
-        st.write(f"최대 우도 추정치 (MLE): {N_MLE}")
-        st.write(f"불편 추정량: {N_unbiased:.2f}")
-        st.write(f"실제 전차 수: {N_true}")
-
-        
-        estimate_names = list(estimates.keys())
-        estimate_values = list(estimates.values())
-
-        fig, ax = plt.subplots(figsize=(8, 6))
-        bars = ax.bar(estimate_names, estimate_values, color=['blue', 'orange', 'green', 'red'])
-        ax.set_ylabel('전차 수')
-        ax.set_title('전차 수 추정치 비교')
-        ax.bar_label(bars)
-        plt.tight_layout()
-
-        st.pyplot(fig)
 
         # 데이터를 Apps Script 웹 앱에 전송
         data = {
