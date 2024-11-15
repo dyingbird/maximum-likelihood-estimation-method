@@ -89,7 +89,7 @@ if submit_clicked and st.session_state['user_guess'] is None:
         closest_estimate = [name for name, diff in differences.items() if diff == min_diff_value]
 
         # 추정치 비교 그래프
-        st.subheader("추정치 비교 그래프")
+        st.subheader("Estimate comparison graph")
         estimates = {
             'your guess': user_guess,
             'maximum likelihood\nestimate': N_MLE,
