@@ -37,12 +37,6 @@ st.subheader("전체 전차 수를 추측해보세요:")
 user_guess_input = st.text_input("당신이 추측한 전체 전차 수를 입력하세요", value="", key='user_guess_input')
 
 submit_clicked = st.button("추측 제출")
-restart_clicked = st.button("다시 시작")
-
-if restart_clicked:
-    # 세션 상태 초기화
-    st.session_state.clear()
-    st.experimental.rerun()
 
 if submit_clicked and st.session_state['user_guess'] is None:
     try:
@@ -159,6 +153,6 @@ if submit_clicked and st.session_state['user_guess'] is None:
         st.error("올바른 숫자를 입력했는지 확인하세요.")
 
 elif st.session_state['user_guess'] is not None:
-    st.write("이미 추측을 제출하셨습니다. 새로운 문제를 풀려면 '다시 시작' 버튼을 눌러주세요.")
+    st.write("이미 추측을 제출하셨습니다. 새로고침하여 새로운 문제를 풀어보세요.")
 else:
     st.info("전체 전차 수에 대한 당신의 추측을 입력하고 '추측 제출' 버튼을 눌러주세요.")
