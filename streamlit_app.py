@@ -42,7 +42,7 @@ restart_clicked = st.button("다시 시작")
 if restart_clicked:
     # 세션 상태 초기화
     st.session_state.clear()
-    st.experimental_rerun()
+    st.experimental.rerun()
 
 if submit_clicked and st.session_state['user_guess'] is None:
     try:
