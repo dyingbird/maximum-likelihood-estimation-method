@@ -1,6 +1,6 @@
 import streamlit as st
 import numpy as np
-import koreanize_matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import requests
 import json
 
