@@ -88,10 +88,10 @@ if submit_clicked and st.session_state['user_guess'] is None:
         # 추정치 비교 그래프
         st.subheader("추정치 비교 그래프")
         estimates = {
-            'your guess': user_guess,
-            'maximum likelihood\nestimate': N_MLE,
-            'unbiased\nestimator': N_unbiased,
-            'Actual number\nof tanks': N_true
+            '당신의 추측': user_guess,
+            '최대 우도 추정치': N_MLE,
+            '불편추정량': N_unbiased,
+            '실제 전차수': N_true
         }
 
         estimate_names = list(estimates.keys())
