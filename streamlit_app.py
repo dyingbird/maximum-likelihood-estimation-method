@@ -1,8 +1,10 @@
 import streamlit as st
 import numpy as np
-import koreanize_matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import requests
 import json
+import koreanize_matplotlib  # 이 줄 추가
+
 
 # 폰트 설정 (한글 사용 안 함)
 plt.rcParams['font.family'] = 'DejaVu Sans'
