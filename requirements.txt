@@ -1,4 +1,6 @@
 streamlit
 numpy
-koreanize_matplotlib
+matplotlib
 requests
+json5
+koreanize-matplotlib
